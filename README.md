@@ -1,5 +1,9 @@
 # 🌸 Frank's Personal Portfolio Page
 
+[![Live Demo](https://img.shields.io/badge/🌸%20Live%20Demo-Visit%20Site-d4848e?style=for-the-badge)](https://frank40281-stack.github.io/0529-homework1/)
+
+> 🔗 **Live Demo:** [https://frank40281-stack.github.io/0529-homework1/](https://frank40281-stack.github.io/0529-homework1/)
+
 A single-page personal portfolio website featuring an elegant split layout, live clock, and animated cherry blossom effect.
 
 ---
