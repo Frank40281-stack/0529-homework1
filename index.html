@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frank — Personal Portfolio</title>
+  <meta name="description"
+    content="Frank's personal portfolio page featuring a live clock, elegant design, and cherry blossom animation." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --cream: #fdf6f0;
+      --warm-white: #faf8f5;
+      --blush: #f2ccd4;
+      --rose: #d4848e;
+      --deep-rose: #9a4a55;
+      --charcoal: #2c2828;
+      --mid-gray: #6b6464;
+      --light-gray: #c5bcbc;
+      --petal-pink: #f4a7b9;
+      --petal-deep: #e07d94;
+      --accent-gold: #c8a87a;
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--warm-white);
+      color: var(--charcoal);
+      position: relative;
+    }
+
+    /* ─── Cherry Blossom Canvas ─── */
+    #blossom-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* ─── Page Layout ─── */
+    .page-wrapper {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ─── LEFT PANEL ─── */
+    .left-panel {
+      width: 42%;
+      min-width: 380px;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .left-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(160deg,
+          rgba(244, 167, 185, 0.18) 0%,
+          rgba(255, 255, 255, 0) 50%,
+          rgba(212, 132, 142, 0.12) 100%);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .photo-frame {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .photo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+      filter: saturate(0.9) contrast(1.05);
+      transition: transform 8s ease;
+    }
+
+    .photo-frame img:hover {
+      transform: scale(1.03);
+    }
+
+    /* Elegant overlay gradient on photo */
+    .photo-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right,
+          transparent 60%,
+          rgba(250, 248, 245, 0.55) 100%),
+        linear-gradient(to bottom,
+          rgba(200, 168, 122, 0.08) 0%,
+          transparent 30%,
+          transparent 70%,
+          rgba(44, 40, 40, 0.25) 100%);
+      z-index: 2;
+    }
+
+    /* Decorative vertical rule */
+    .divider-line {
+      position: absolute;
+      right: 0;
+      top: 8%;
+      height: 84%;
+      width: 1px;
+      background: linear-gradient(to bottom,
+          transparent,
+          var(--light-gray) 20%,
+          var(--rose) 50%,
+          var(--light-gray) 80%,
+          transparent);
+      z-index: 5;
+    }
+
+    /* ─── RIGHT PANEL ─── */
+    .right-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 4rem 5rem 4rem 5.5rem;
+      background: var(--warm-white);
+      position: relative;
+      overflow-y: auto;
+    }
+
+    .right-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(244, 167, 185, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .right-panel::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(200, 168, 122, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ─── Tag / Label ─── */
+    .label-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1.6rem;
+    }
+
+    .label-tag span {
+      display: inline-block;
+      width: 32px;
+      height: 1px;
+      background: var(--rose);
+    }
+
+    .label-tag p {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--rose);
+    }
+
+    /* ─── Name ─── */
+    .name-block {
+      margin-bottom: 0.5rem;
+    }
+
+    .name-greeting {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-style: italic;
+      font-size: 1.5rem;
+      color: var(--mid-gray);
+      letter-spacing: 0.04em;
+      margin-bottom: 0.2rem;
+      display: block;
+    }
+
+    .name-main {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3.8rem, 7vw, 6.5rem);
+      font-weight: 700;
+      color: var(--charcoal);
+      line-height: 0.9;
+      letter-spacing: -0.02em;
+      display: block;
+    }
+
+    .name-accent {
+      display: inline-block;
+      color: var(--rose);
+    }
+
+    /* ─── Tagline ─── */
+    .tagline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--mid-gray);
+      margin-top: 1.2rem;
+      margin-bottom: 2.5rem;
+      letter-spacing: 0.03em;
+    }
+
+    /* ─── Decorative separator ─── */
+    .ornament {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 2.5rem;
+    }
+
+    .ornament-line {
+      height: 1px;
+      width: 60px;
+      background: linear-gradient(to right, var(--blush), var(--rose));
+    }
+
+    .ornament-petal {
+      font-size: 1rem;
+      color: var(--rose);
+      animation: petalspin 6s linear infinite;
+    }
+
+    @keyframes petalspin {
+
+      0%,
+      100% {
+        transform: rotate(0deg) scale(1);
+      }
+
+      50% {
+        transform: rotate(180deg) scale(1.1);
+      }
+    }
+
+    .ornament-line-right {
+      height: 1px;
+      width: 30px;
+      background: linear-gradient(to left, transparent, var(--blush));
+    }
+
+    /* ─── Clock ─── */
+    .clock-section {
+      margin-bottom: 3rem;
+    }
+
+    .clock-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--light-gray);
+      margin-bottom: 0.6rem;
+    }
+
+    .clock-display {
+      display: flex;
+      align-items: baseline;
+      gap: 0;
+    }
+
+    .clock-time {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.8rem, 5vw, 4.2rem);
+      font-weight: 300;
+      color: var(--charcoal);
+      letter-spacing: 0.04em;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .clock-colon {
+      display: inline-block;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.8rem, 5vw, 4.2rem);
+      font-weight: 300;
+      color: var(--rose);
+      letter-spacing: 0;
+      line-height: 1;
+      margin: 0 1px;
+      animation: colonblink 1s step-end infinite;
+    }
+
+    @keyframes colonblink {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.25;
+      }
+    }
+
+    .clock-seconds {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+      font-weight: 300;
+      color: var(--rose);
+      margin-left: 8px;
+      letter-spacing: 0.04em;
+      align-self: flex-end;
+      padding-bottom: 4px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .clock-date {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 300;
+      color: var(--mid-gray);
+      letter-spacing: 0.08em;
+      margin-top: 0.5rem;
+    }
+
+    .clock-ampm {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--rose);
+      margin-left: 14px;
+      align-self: center;
+      border: 1px solid var(--blush);
+      padding: 3px 8px;
+      border-radius: 2px;
+    }
+
+    /* ─── Info Grid ─── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem 3rem;
+      margin-bottom: 3rem;
+    }
+
+    .info-item {}
+
+    .info-item-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--light-gray);
+      margin-bottom: 0.35rem;
+    }
+
+    .info-item-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem;
+      font-weight: 400;
+      color: var(--charcoal);
+      letter-spacing: 0.02em;
+    }
+
+    /* ─── Social Links ─── */
+    .social-row {
+      display: flex;
+      gap: 1.4rem;
+      align-items: center;
+    }
+
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mid-gray);
+      transition: color 0.3s ease;
+      position: relative;
+    }
+
+    .social-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--rose);
+      transition: width 0.3s ease;
+    }
+
+    .social-link:hover {
+      color: var(--rose);
+    }
+
+    .social-link:hover::after {
+      width: 100%;
+    }
+
+    .social-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--blush);
+    }
+
+    /* ─── Bottom signature on photo ─── */
+    .photo-signature {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 2rem;
+      z-index: 6;
+      writing-mode: vertical-lr;
+      text-orientation: mixed;
+      transform: rotate(180deg);
+    }
+
+    .photo-signature p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.2em;
+      color: rgba(255, 255, 255, 0.65);
+      text-transform: uppercase;
+    }
+
+    /* ─── Scroll indicator ─── */
+    .scroll-indicator {
+      position: absolute;
+      right: 2.5rem;
+      bottom: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .scroll-indicator span {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--light-gray);
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--rose), transparent);
+      animation: scrollline 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollline {
+      0% {
+        transform: scaleY(0);
+        transform-origin: top;
+        opacity: 0;
+      }
+
+      50% {
+        transform: scaleY(1);
+        transform-origin: top;
+        opacity: 1;
+      }
+
+      100% {
+        transform: scaleY(1);
+        transform-origin: bottom;
+        opacity: 0;
+      }
+    }
+
+    /* ─── Page number ─── */
+    .page-num {
+      position: absolute;
+      top: 50%;
+      right: 2rem;
+      transform: translateY(-50%);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.8rem;
+      color: var(--light-gray);
+      letter-spacing: 0.1em;
+      writing-mode: vertical-rl;
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 900px) {
+
+      html,
+      body {
+        overflow: auto;
+      }
+
+      .page-wrapper {
+        flex-direction: column;
+        height: auto;
+      }
+
+      .left-panel {
+        width: 100%;
+        min-width: unset;
+        height: 55vw;
+        max-height: 420px;
+      }
+
+      .divider-line {
+        display: none;
+      }
+
+      .right-panel {
+        padding: 3rem 2rem;
+      }
+
+      .name-main {
+        font-size: 3.5rem;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Cherry Blossom Canvas -->
+  <canvas id="blossom-canvas"></canvas>
+
+  <div class="page-wrapper">
+
+    <!-- ═══ LEFT PANEL ═══ -->
+    <div class="left-panel">
+      <div class="photo-frame">
+        <img src="photo.jpg" alt="Frank — Personal Photo" id="profile-photo" />
+        <div class="photo-overlay"></div>
+      </div>
+      <div class="divider-line"></div>
+      <div class="photo-signature">
+        <p>Frank &nbsp;·&nbsp; 2026</p>
+      </div>
+    </div>
+
+    <!-- ═══ RIGHT PANEL ═══ -->
+    <div class="right-panel">
+
+      <!-- Label -->
+      <div class="label-tag">
+        <span></span>
+        <p>Personal Portfolio</p>
+      </div>
+
+      <!-- Name -->
+      <div class="name-block">
+        <span class="name-greeting">Hello, I'm</span>
+        <span class="name-main">Fr<span class="name-accent">an</span>k</span>
+      </div>
+
+      <!-- Tagline -->
+      <p class="tagline">Wherever life plants you, bloom with grace.</p>
+
+      <!-- Ornament -->
+      <div class="ornament">
+        <div class="ornament-line"></div>
+        <span class="ornament-petal">🌸</span>
+        <span class="ornament-petal" style="animation-delay:-3s">🌸</span>
+        <div class="ornament-line-right"></div>
+      </div>
+
+      <!-- Clock -->
+      <div class="clock-section">
+        <div class="clock-label">Current Time</div>
+        <div class="clock-display">
+          <span class="clock-time" id="clock-h">00</span>
+          <span class="clock-colon">:</span>
+          <span class="clock-time" id="clock-m">00</span>
+          <span class="clock-seconds" id="clock-s">00</span>
+          <span class="clock-ampm" id="clock-ampm">AM</span>
+        </div>
+        <div class="clock-date" id="clock-date">Loading…</div>
+      </div>
+
+      <!-- Info Grid -->
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-item-label">Name</div>
+          <div class="info-item-value">Frank</div>
+        </div>
+        <div class="info-item">
+          <div class="info-item-label">Based In</div>
+          <div class="info-item-value">Taiwan 🇹🇼</div>
+        </div>
+        <div class="info-item">
+          <div class="info-item-label">Passion</div>
+          <div class="info-item-value">Life &amp; Adventure</div>
+        </div>
+        <div class="info-item">
+          <div class="info-item-label">Season</div>
+          <div class="info-item-value">Cherry Blossom 🌸</div>
+        </div>
+      </div>
+
+      <!-- Social -->
+      <div class="social-row">
+        <a href="#" class="social-link" id="link-about">About</a>
+        <div class="social-dot"></div>
+        <a href="#" class="social-link" id="link-works">Works</a>
+        <div class="social-dot"></div>
+        <a href="#" class="social-link" id="link-contact">Contact</a>
+      </div>
+
+      <!-- Page number -->
+      <div class="page-num">01 / 01</div>
+
+      <!-- Scroll indicator -->
+      <div class="scroll-indicator">
+        <span>scroll</span>
+        <div class="scroll-line"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    /* ─────────────────────────────────────────
+       LIVE CLOCK — updates every second
+    ───────────────────────────────────────── */
+    const clockH = document.getElementById('clock-h');
+    const clockM = document.getElementById('clock-m');
+    const clockS = document.getElementById('clock-s');
+    const clockAmpm = document.getElementById('clock-ampm');
+    const clockDate = document.getElementById('clock-date');
+
+    const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'];
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function updateClock() {
+      const now = new Date();
+      let h = now.getHours();
+      const m = now.getMinutes();
+      const s = now.getSeconds();
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+
+      clockH.textContent = pad(h);
+      clockM.textContent = pad(m);
+      clockS.textContent = pad(s);
+      clockAmpm.textContent = ampm;
+
+      const day = DAYS[now.getDay()];
+      const date = now.getDate();
+      const mon = MONTHS[now.getMonth()];
+      const yr = now.getFullYear();
+      clockDate.textContent = `${day}, ${mon} ${date}, ${yr}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+
+
+    /* ─────────────────────────────────────────
+       CHERRY BLOSSOM ANIMATION
+    ───────────────────────────────────────── */
+    const canvas = document.getElementById('blossom-canvas');
+    const ctx = canvas.getContext('2d');
+    let petals = [];
+    let W, H;
+
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    /* Petal shapes drawn as layered arcs */
+    function drawPetal(x, y, size, angle, alpha, colorIdx) {
+      const colors = [
+        `rgba(244, 167, 185, ${alpha})`,   // soft pink
+        `rgba(248, 200, 210, ${alpha})`,   // blush
+        `rgba(224, 125, 148, ${alpha})`,   // deep rose
+        `rgba(255, 220, 230, ${alpha})`,   // very light pink
+        `rgba(210, 150, 175, ${alpha})`,   // mauve
+      ];
+      const col = colors[colorIdx % colors.length];
+
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(angle);
+      ctx.globalAlpha = alpha;
+
+      /* Draw a five-petal blossom */
+      for (let i = 0; i < 5; i++) {
+        ctx.save();
+        ctx.rotate((i * Math.PI * 2) / 5);
+        ctx.beginPath();
+        ctx.ellipse(0, -size * 0.55, size * 0.3, size * 0.55, 0, 0, Math.PI * 2);
+        ctx.fillStyle = col;
+        ctx.fill();
+        ctx.restore();
+      }
+
+      /* Center dot */
+      ctx.beginPath();
+      ctx.arc(0, 0, size * 0.18, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 240, 200, ${alpha * 0.9})`;
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    /* Petal factory */
+    function spawnPetal() {
+      return {
+        x: Math.random() * W,
+        y: -20,
+        size: 6 + Math.random() * 9,
+        speed: 0.6 + Math.random() * 1.2,
+        wind: -0.6 + Math.random() * 1.2,
+        angle: Math.random() * Math.PI * 2,
+        spin: (Math.random() - 0.5) * 0.04,
+        sway: Math.random() * Math.PI * 2,
+        swaySpd: 0.012 + Math.random() * 0.018,
+        swayAmp: 0.8 + Math.random() * 1.8,
+        alpha: 0.55 + Math.random() * 0.45,
+        colorIdx: Math.floor(Math.random() * 5),
+      };
+    }
+
+    /* Initialise pool */
+    for (let i = 0; i < 60; i++) {
+      const p = spawnPetal();
+      p.y = Math.random() * H;  // scatter on first load
+      petals.push(p);
+    }
+
+    function animatePetals() {
+      ctx.clearRect(0, 0, W, H);
+
+      /* Occasionally add a new petal */
+      if (petals.length < 80 && Math.random() < 0.35) {
+        petals.push(spawnPetal());
+      }
+
+      petals.forEach((p, i) => {
+        p.sway += p.swaySpd;
+        p.x += p.wind + Math.sin(p.sway) * p.swayAmp;
+        p.y += p.speed;
+        p.angle += p.spin;
+
+        /* Fade out near the bottom */
+        const fadeZone = H * 0.85;
+        const alpha = p.y > fadeZone
+          ? p.alpha * (1 - (p.y - fadeZone) / (H * 0.15))
+          : p.alpha;
+
+        if (alpha > 0) drawPetal(p.x, p.y, p.size, p.angle, alpha, p.colorIdx);
+
+        /* Recycle when off-screen */
+        if (p.y > H + 20 || p.x < -50 || p.x > W + 50) {
+          petals[i] = spawnPetal();
+        }
+      });
+
+      requestAnimationFrame(animatePetals);
+    }
+
+    animatePetals();
+  </script>
+</body>
+
+</html>
